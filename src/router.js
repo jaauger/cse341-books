@@ -2,6 +2,8 @@ import express from 'express';
 
 import { getBookByIdHandler, getBooksHandler } from "./controllers/books.js";
 
+import { getAllAuthors, getAuthorById, createAuthor, updateAuthor, deleteAuthor } from './controllers/authors.js';
+
 const router = express.Router();
 
 /**
@@ -107,5 +109,184 @@ router.get('/books', getBooksHandler);
  *                   example: Internal server error
  */
 router.get('/books/:id', getBookByIdHandler);
+
+/**
+ * @openapi
+ * /authors:
+ *   post:
+ *     summary: Create a new author
+ *     description: Adds a new author to the database.
+ *     tags:
+ *       - Authors
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *               - authorName
+ *               - birthYear
+ *             properties:
+ *               id:
+ *                 type: string
+ *                 example: a11
+ *               authorName:
+ *                 type: string
+ *                 example: Isaac Asimov
+ *               birthYear:
+ *                 type: string
+ *                 example: "1920"
+ *     responses:
+ *       201:
+ *         description: Author successfully created.
+ *       400:
+ *         description: Invalid author data or duplicate ID.
+ *       500:
+ *         description: Unable to create author.
+ */
+router.post('/authors', createAuthor);
+/**
+ * @openapi
+ * /authors:
+ *   get:
+ *     summary: Retrieve all authors
+ *     description: Returns an array of all authors in the database.
+ *     tags:
+ *       - Authors
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved authors.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     example: a1
+ *                   authorName:
+ *                     type: string
+ *                     example: J.R.R. Tolkien
+ *                   birthYear:
+ *                     type: string
+ *                     example: "1892"
+ *       500:
+ *         description: Unable to retrieve authors.
+ */
+router.get('/authors', getAllAuthors);
+
+/**
+ * @openapi
+ * /authors/{id}:
+ *   get:
+ *     summary: Retrieve an author by ID
+ *     description: Returns a single author using their custom ID.
+ *     tags:
+ *       - Authors
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The custom author ID.
+ *         schema:
+ *           type: string
+ *           example: a1
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the author.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   example: a1
+ *                 authorName:
+ *                   type: string
+ *                   example: J.R.R. Tolkien
+ *                 birthYear:
+ *                   type: string
+ *                   example: "1892"
+ *       404:
+ *         description: Author not found.
+ *       500:
+ *         description: Unable to retrieve author.
+ */
+router.get('/authors/:id', getAuthorById);
+
+/**
+ * @openapi
+ * /authors/{id}:
+ *   put:
+ *     summary: Update an existing author
+ *     description: Updates an author's name and birth year.
+ *     tags:
+ *       - Authors
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The custom ID of the author to update.
+ *         schema:
+ *           type: string
+ *           example: a11
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - authorName
+ *               - birthYear
+ *             properties:
+ *               authorName:
+ *                 type: string
+ *                 example: Isaac Asimov
+ *               birthYear:
+ *                 type: string
+ *                 example: "1921"
+ *     responses:
+ *       200:
+ *         description: Author successfully updated.
+ *       400:
+ *         description: Invalid author information.
+ *       404:
+ *         description: Author not found.
+ *       500:
+ *         description: Unable to update author.
+ */
+router.put('/authors/:id', updateAuthor);
+
+/**
+ * @swagger
+ * /authors/{id}:
+ *   delete:
+ *     summary: Delete an author by ID
+ *     tags:
+ *       - Authors
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The author's unique ID
+ *     responses:
+ *       204:
+ *         description: Author deleted successfully
+ *       404:
+ *         description: Author not found
+ *       409:
+ *         description: Author cannot be deleted because books reference them
+ *       500:
+ *         description: Internal server error
+ */
+router.delete('/authors/:id', deleteAuthor);
 
 export default router;
