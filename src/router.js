@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { getBookByIdHandler, getBooksHandler } from "./controllers/books.js";
+import { getBookByIdHandler, getBooksHandler, createBook, updateBook, deleteBook } from "./controllers/books.js";
 
 import { getAllAuthors, getAuthorById, createAuthor, updateAuthor, deleteAuthor } from './controllers/authors.js';
 
@@ -27,9 +27,9 @@ const router = express.Router();
  *                   id:
  *                     type: string
  *                     example: b1
- *                   author:
+ *                   authorId:
  *                     type: string
- *                     example: J.R.R. Tolkien
+ *                     example: a1
  *                   title:
  *                     type: string
  *                     example: The Hobbit
@@ -77,9 +77,9 @@ router.get('/books', getBooksHandler);
  *                 id:
  *                   type: string
  *                   example: b1
- *                 author:
+ *                 authorId:
  *                   type: string
- *                   example: J.R.R. Tolkien
+ *                   example: a1
  *                 title:
  *                   type: string
  *                   example: The Hobbit
@@ -288,5 +288,152 @@ router.put('/authors/:id', updateAuthor);
  *         description: Internal server error
  */
 router.delete('/authors/:id', deleteAuthor);
+
+
+/**
+ * @openapi
+ * /books:
+ *   post:
+ *     summary: Create a new book
+ *     description: Adds a new book to the database.
+ *     tags:
+ *       - Books
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *               - authorId
+ *               - title
+ *               - publicationDate
+ *             properties:
+ *               id:
+ *                 type: string
+ *                 example: b11
+ *               authorId:
+ *                 type: string
+ *                 example: a11
+ *               title:
+ *                 type: string
+ *                 example: "Book title"
+ *               publicationDate:
+ *                 type: string
+ *                 example: "1920-10-09"
+ *     responses:
+ *       201:
+ *         description: Book successfully created.
+ *       400:
+ *         description: Invalid book data or duplicate ID.
+ *       500:
+ *         description: Unable to create book.
+ */
+router.post('/books', createBook);
+
+/**
+ * @openapi
+ * /books/{id}:
+ *   put:
+ *     summary: Update an existing book
+ *     description: Updates a book's authors reference, title, and publication date.
+ *     tags:
+ *       - Books
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The custom ID of the book to update.
+ *         schema:
+ *           type: string
+ *           example: b11
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - authorId
+ *               - title
+ *               - publicationDate
+ *             properties:
+ *               authorId:
+ *                 type: string
+ *                 example: a11
+ *               title:
+ *                 type: string
+ *                 example: "Book's title"
+ *               publicationDate:
+ *                 type: string
+ *                 example: "1925-09-15"
+ *     responses:
+ *       200:
+ *         description: book successfully updated.
+ *       400:
+ *         description: Invalid book information.
+ *       404:
+ *         description: book not found.
+ *       500:
+ *         description: Unable to update book.
+ */
+router.put('/books/:id', updateBook);
+
+/**
+ * @swagger
+ * /books/{id}:
+ *   delete:
+ *     summary: Delete a book by ID
+ *     tags:
+ *       - Books
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The book's unique ID
+ *     responses:
+ *       204:
+ *         description: Book deleted successfully
+ *       404:
+ *         description: Book not found *
+ *       500:
+ *         description: Internal server error
+ */
+router.delete('/books/:id', deleteBook);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export default router;
